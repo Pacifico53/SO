@@ -17,7 +17,8 @@ int main(int argc, const char *argv[])
     }
     else {
         wait(&status);
-        printf("Eu sou o pai pid = %d\n", getpid());
+        printf("Sou o pai = %d. O filho = %d morreu,status = %d.\n", getpid(), pid, status);
     }
     return 0;
 }
+
