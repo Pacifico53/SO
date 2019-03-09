@@ -1,23 +1,42 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include "person.h"
 
-int main(int argc, const char *argv[])
+void printHelp(){
+    printf("Usage:\n\t-a [name] [age]\t\t\tAdd person.\n");
+    printf("\t-u [name] [new age]\t\tUpdate persons age\n");
+}
+
+int main(int argc, char *argv[])
 {
-    Person andre = new_person("Andre", 20);
-    printf("idade anterior andre %d\n",andre.age);
-    person_change_age(&andre,30);
-    printf("idade modificada andre %d\n",andre.age);
+    if (argc < 2 || strcmp(argv[1], "-h")==0) {
+        printHelp();
+        return 1;
+    }
 
-    Person new_andre = clone_person(&andre);
+    int fd = open("db.txt", O_RDWR | O_APPEND);
 
-    person_change_age(&new_andre, 40);
-    printf("idade andre %d\n", andre.age);
-    printf("idade new_andre %d\n",new_andre.age);
+    if (argc == 4 && strcmp(argv[1], "-a") == 0) {
+        Person p = new_person(argv[2], atoi(argv[3]));
+        printf("Name: %s.\nAge: %d.\n", p.name, p.age);
 
-    destroy_person(&new_andre);
-    destroy_person(&andre);
+        char buf[256];
+        char ageStr[10];
+
+        sprintf(ageStr, "%d", p.age);
+        strcat(buf, p.name);
+        strcat(buf, " ");
+        strcat(buf, ageStr);
+        strcat(buf, "\n");
+
+        write(fd, buf, strlen(buf));
+        printf("Write to db done\n");
+    }
+
+    close(fd);
     return 0;
 }
 
