@@ -19,20 +19,20 @@ int main()
 {
     srand(time(NULL)); //SEED RANDOMNESS
 
-    int col = (rand() % 500) + 100;
+    int col = (rand() % 5000) + 100;
     printf("col = %d\n", col);
-    int lin = (rand() % 50) + 5;
+    int lin = (rand() % 500) + 5;
     printf("lin = %d\n", lin);
 
     int i = 0, j = 0;
     int mat[lin][col];
     for (i = 0; i < lin; i++) {
         for (j = 0; j < col; j++) {
-            mat[i][j] = rand() % 3000;
+            mat[i][j] = rand() % 10000;
         }
     }
     
-    int num = rand() % 3000;
+    int num = rand() % 10000;
 
     printf("Random matrix done, columns = %d, lines = %d\nNumber to find = %d\n", col, lin, num);
 
@@ -41,7 +41,7 @@ int main()
     int aLine = 0;
     int flag = 0;
     int status;
-
+    
     for (i = 0; i < lin; i++) {
         if (pid != 0) {
             pid = fork();
@@ -56,18 +56,17 @@ int main()
         flag = searchLine(mat[aLine], col, num);
         if (flag == 1) {
             printf("Eu pid = %d encontrei na linha %d.\n", getpid(), aLine); 
-            _exit(0);
+            _exit(getpid());
         }
         else {
-            printf("Eu pid = %d nao encontrei na linha %d.\n", getpid(), aLine);
-            _exit(1);
+            _exit(0);
         }
     }
     else {
         for (i = 0; i < lin; i++) {
             wait(&status);
-            if(status == 0){
-                printf("Found num!\n");
+            if(status != 0){
+                printf("Filho %d found num!\n", status); //TODO isto nao esta a mostrar os pids dos filhos
             }
         }
     }
